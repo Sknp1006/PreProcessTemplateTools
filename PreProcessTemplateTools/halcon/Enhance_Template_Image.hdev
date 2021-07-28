@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.2" halcon_version="20.11.1.2">
+<procedure name="main">
+<interface/>
+<body>
+<l>dev_open_window (0, 0, 512, 512, 'black', WindowHandle)</l>
+<c></c>
+<l>list_files ('C:/Users/Admin/Downloads/demo/填空手写演示', ['files','follow_links'], ImageFiles)</l>
+<l>tuple_regexp_select (ImageFiles, ['\\.(tif|tiff|gif|bmp|jpg|jpeg|jp2|png|pcx|pgm|ppm|pbm|xwd|ima|hobj)$','ignore_case'], ImageFiles)</l>
+<l>for Index := 0 to |ImageFiles| - 1 by 1</l>
+<l>    read_image (Image, ImageFiles[Index])</l>
+<c>    </c>
+<c>    ***判断灰白，不用，统一2</c>
+<l>*     judge_bai_ornot (Image, bai, Mean)</l>
+<l>*     if(bai = 'Yes')</l>
+<l>*         chose := 1</l>
+<l>*     else</l>
+<l>*         chose := 2</l>
+<l>*     endif</l>
+<c>    </c>
+<c>    ***白色选1，灰色选2</c>
+<c>    ***添加四个变量a、b；m、n</c>
+<l>    a:=0</l>
+<l>    b:=0</l>
+<l>    Enhance_Template_Image (Image, ImageScaled, 2, a, b, MeanB2, MeanT, MeanW, res)</l>
+<c>    </c>
+<l>    if (1)</l>
+<l>        a:=50</l>
+<l>        b:=10</l>
+<l>        if (MeanB2+a &lt;= MeanW-b)</l>
+<l>            Enhance_Template_Image (Image, ImageScaled, 2, a, b, MeanB2, MeanT1, MeanW, res)</l>
+<l>        endif</l>
+<l>    endif</l>
+<c>    </c>
+<c>    </c>
+<l>*     chose:=2</l>
+<l>*     Enhance_Image (Image, ImageScaled2, 2)</l>
+<c>    </c>
+<l>*     threshold (ImageScaled, Region1, 0, 160)</l>
+<l>*     threshold (ImageScaled, Region2, 0, 160)</l>
+<c>    </c>
+<c>    </c>
+<l>*     stop ()</l>
+<l>*     write_image (ImageScaled, 'jpg', 0, save_Path)</l>
+<l>stop ()</l>
+<c></c>
+<l>endfor</l>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+<procedure name="Enhance_Template_Image">
+<interface>
+<io>
+<par name="Image" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="ImageScaled" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="chose" base_type="ctrl" dimension="0"/>
+<par name="a" base_type="ctrl" dimension="0"/>
+<par name="b" base_type="ctrl" dimension="0"/>
+</ic>
+<oc>
+<par name="MeanB2" base_type="ctrl" dimension="0"/>
+<par name="MeanT" base_type="ctrl" dimension="0"/>
+<par name="MeanW" base_type="ctrl" dimension="0"/>
+<par name="res" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<c></c>
+<l>* stop ()</l>
+<l>lenthT := 30</l>
+<c>* **预处理图片</c>
+<l>rgb1_to_gray (Image, GrayImageT)</l>
+<l>get_image_size (Image, Width_T, Height_T)</l>
+<c></c>
+<l>if (Width_T&gt;lenthT and Height_T&gt;lenthT)</l>
+<l>    if (Width_T&lt;2*lenthT or Height_T&lt;2*lenthT)</l>
+<l>        lenthT := min([Width_T, Height_T])/4</l>
+<l>    endif</l>
+<c></c>
+<c></c>
+<l>    gen_rectangle1 (ROI_0, lenthT, lenthT, Height_T-lenthT, Width_T-lenthT)</l>
+<c></c>
+<l>    reduce_domain (GrayImageT, ROI_0, ImageReducedT)</l>
+<l>    intensity (ROI_0, GrayImageT, MeanT, DeviationT)</l>
+<l>*     if (MeanT&gt;230)</l>
+<c></c>
+<c>    * *获取字体灰度值</c>
+<l>    threshold (ImageReducedT, RegionB, 0, MeanT)</l>
+<l>    reduce_domain (GrayImageT, RegionB, ImageReducedT)</l>
+<l>    intensity (RegionB, ImageReducedT, MeanB, DeviationB)</l>
+<c></c>
+<l>    threshold (ImageReducedT, RegionB1, 0, MeanB)</l>
+<l>    reduce_domain (GrayImageT, RegionB1, ImageReducedT1)</l>
+<l>    intensity (RegionB1, ImageReducedT1, MeanB2, DeviationB2)</l>
+<c></c>
+<l>    threshold (ImageReducedT, RegionB2, 0, MeanB2)</l>
+<l>    reduce_domain (GrayImageT, RegionB2, ImageReducedT12)</l>
+<l>    intensity (RegionB2, ImageReducedT12, MeanB3, DeviationB3)</l>
+<c></c>
+<c></c>
+<c>    * *获取背景灰度值</c>
+<l>    threshold (GrayImageT, RegionW, MeanT, 255)</l>
+<l>    reduce_domain (GrayImageT, RegionW, ImageReducedW)</l>
+<l>    intensity (RegionW, ImageReducedW, MeanW, DeviationW)</l>
+<c></c>
+<l>    threshold (GrayImageT, RegionW1, MeanW, 255)</l>
+<l>    reduce_domain (GrayImageT, RegionW1, ImageReducedW2)</l>
+<l>    intensity (RegionW1, ImageReducedW2, MeanW2, DeviationW2)</l>
+<c></c>
+<c></c>
+<l>*     min1 := MeanB2+DeviationB2</l>
+<l>*     max1 := MeanW-2*DeviationW</l>
+<c></c>
+<l>    if (a=0 and b=0)</l>
+<c></c>
+<c></c>
+<l>        if (MeanB3&gt;45 or MeanW2&lt;249)</l>
+<l>*             chose := 1</l>
+<l>*             DeviationW2 := 15</l>
+<l>            if (chose=1)</l>
+<l>                min1 := MeanB2+DeviationB2</l>
+<l>                max1 := MeanW2+DeviationW2</l>
+<l>            elseif (chose=2)</l>
+<l>                min1 := MeanB2+DeviationB2</l>
+<l>                max1 := MeanW-2*DeviationW</l>
+<l>            elseif (chose=3)</l>
+<l>                min1 := MeanB2-DeviationB2</l>
+<l>                max1 := MeanW2+DeviationW2</l>
+<l>            elseif (chose=4)</l>
+<l>                min1 := MeanB2-DeviationB2</l>
+<l>                max1 := MeanW2-DeviationW2</l>
+<l>            endif</l>
+<c></c>
+<c></c>
+<c></c>
+<l>            if (max1-min1&gt;10)</l>
+<c></c>
+<l>                mutil := 255/(max1-min1)</l>
+<l>                M1 := min1*mutil</l>
+<l>                M2 := max1*mutil</l>
+<l>                add := -M1</l>
+<l>            elseif (max1&lt;=min1)</l>
+<c></c>
+<l>                min1 := 5</l>
+<l>                max1 := 250</l>
+<l>                mutil := 255/(max1-min1)</l>
+<l>                M1 := min1*mutil</l>
+<l>                M2 := max1*mutil</l>
+<l>                add := -M1</l>
+<l>            else</l>
+<c></c>
+<l>                min1 := max1-10</l>
+<l>                max1 := max1</l>
+<l>                mutil := 255/(max1-min1)</l>
+<l>                M1 := min1*mutil</l>
+<l>                M2 := max1*mutil</l>
+<l>                add := -M1</l>
+<c></c>
+<l>            endif</l>
+<c></c>
+<c></c>
+<l>            scale_image (Image, ImageScaled, mutil, add)</l>
+<l>            threshold (ImageScaled, Region, 0, 220)</l>
+<l>            opening_circle (Region, RegionOpening1, 1)</l>
+<c></c>
+<l>            get_image_size (Image, Width, Height)</l>
+<l>            gen_rectangle1 (Rectangle, 0, 0, Height-1, Width-1)</l>
+<c></c>
+<c></c>
+<l>            difference (Rectangle, RegionOpening1, RegionDifference)</l>
+<l>*             stop ()</l>
+<l>            count_channels (ImageScaled, Channels)</l>
+<c></c>
+<l>            if (Channels=3)</l>
+<l>                decompose3 (ImageScaled, Image1, Image2, Image3)</l>
+<c></c>
+<l>                overpaint_region (Image1, RegionDifference, 250, 'fill')</l>
+<l>                overpaint_region (Image2, RegionDifference, 250, 'fill')</l>
+<l>                overpaint_region (Image3, RegionDifference, 250, 'fill')</l>
+<c></c>
+<l>                compose3 (Image1, Image2, Image3, ImageScaled)</l>
+<l>            elseif (Channels=1)</l>
+<l>                overpaint_region (ImageScaled, RegionDifference, 250, 'fill')</l>
+<l>            endif</l>
+<c></c>
+<l>            ImageScaled := ImageScaled</l>
+<c>            </c>
+<l>        else</l>
+<l>            ImageScaled := Image</l>
+<l>        endif</l>
+<c></c>
+<l>        res := 'ok'</l>
+<c></c>
+<l>    else</l>
+<c>        *这里的a、b是偏移量</c>
+<l>        min1 := MeanB2+a</l>
+<l>        max1 := MeanW-b</l>
+<c></c>
+<l>        if (min1&gt;=max1)</l>
+<l>            res := 'MeanB2+a &gt;= MeanW-b, 减小a值，或者增大b值'</l>
+<l>            return ()</l>
+<l>        else</l>
+<l>            mutil := 255/(max1-min1)</l>
+<l>            M1 := min1*mutil</l>
+<l>            M2 := max1*mutil</l>
+<l>            add := -M1</l>
+<c></c>
+<l>            scale_image (Image, ImageScaled, mutil, add)</l>
+<l>            threshold (ImageScaled, Region, 0, 220)</l>
+<l>            opening_circle (Region, RegionOpening1, 1)</l>
+<c></c>
+<l>            get_image_size (Image, Width, Height)</l>
+<l>            gen_rectangle1 (Rectangle, 0, 0, Height-1, Width-1)</l>
+<c></c>
+<c></c>
+<l>            difference (Rectangle, RegionOpening1, RegionDifference)</l>
+<l>*             stop ()</l>
+<l>            count_channels (ImageScaled, Channels)</l>
+<c></c>
+<l>            if (Channels=3)</l>
+<l>                decompose3 (ImageScaled, Image1, Image2, Image3)</l>
+<c></c>
+<l>                overpaint_region (Image1, RegionDifference, 250, 'fill')</l>
+<l>                overpaint_region (Image2, RegionDifference, 250, 'fill')</l>
+<l>                overpaint_region (Image3, RegionDifference, 250, 'fill')</l>
+<c></c>
+<l>                compose3 (Image1, Image2, Image3, ImageScaled)</l>
+<l>            elseif (Channels=1)</l>
+<l>                overpaint_region (ImageScaled, RegionDifference, 250, 'fill')</l>
+<l>            endif</l>
+<c></c>
+<l>            ImageScaled := ImageScaled</l>
+<c></c>
+<c></c>
+<l>            res := 'ok'</l>
+<c></c>
+<l>        endif</l>
+<c></c>
+<l>    endif</l>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<l>    count_channels (ImageScaled, Channels)</l>
+<c></c>
+<l>    if (Channels=3)</l>
+<l>        decompose3 (ImageScaled, Image1, Image2, Image3)</l>
+<l>        threshold (Image1, Region1, 0, 2)</l>
+<l>        overpaint_region (Image1, Region1, 3, 'fill')</l>
+<l>        threshold (Image1, Region1, 254, 255)</l>
+<l>        overpaint_region (Image1, Region1, 253, 'fill')</l>
+<c></c>
+<l>        threshold (Image2, Region2, 0, 2)</l>
+<l>        overpaint_region (Image2, Region2, 3, 'fill')</l>
+<l>        threshold (Image2, Region2, 254, 255)</l>
+<l>        overpaint_region (Image2, Region2, 253, 'fill')</l>
+<c></c>
+<l>        threshold (Image3, Region3, 0, 2)</l>
+<l>        overpaint_region (Image3, Region3, 3, 'fill')</l>
+<l>        threshold (Image3, Region3, 254, 255)</l>
+<l>        overpaint_region (Image3, Region3, 253, 'fill')</l>
+<c></c>
+<l>        compose3 (Image1, Image2, Image3, ImageScaled)</l>
+<c></c>
+<c></c>
+<l>    elseif (Channels=1)</l>
+<c></c>
+<l>        threshold (ImageScaled, Region1, 0, 2)</l>
+<l>        overpaint_region (ImageScaled, Region1, 3, 'fill')</l>
+<l>        threshold (ImageScaled, Region1, 254, 255)</l>
+<l>        overpaint_region (ImageScaled, Region1, 253, 'fill')</l>
+<c></c>
+<c></c>
+<l>    endif</l>
+<c></c>
+<l>*     stop ()</l>
+<l>endif</l>
+<l>return ()</l>
+<c></c>
+</body>
+<docu id="Enhance_Template_Image">
+<parameters>
+<parameter id="Image"/>
+<parameter id="ImageScaled"/>
+<parameter id="MeanB2"/>
+<parameter id="MeanT"/>
+<parameter id="MeanW"/>
+<parameter id="a"/>
+<parameter id="b"/>
+<parameter id="chose"/>
+<parameter id="res"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="Enhance_Image">
+<interface>
+<io>
+<par name="Image" base_type="iconic" dimension="0"/>
+</io>
+<oo>
+<par name="ImageScaled" base_type="iconic" dimension="0"/>
+</oo>
+<ic>
+<par name="chose" base_type="ctrl" dimension="0"/>
+</ic>
+</interface>
+<body>
+<c></c>
+<l>* stop ()</l>
+<l>lenthT := 30</l>
+<c>* **预处理图片</c>
+<l>rgb1_to_gray (Image, GrayImageT)</l>
+<l>get_image_size (Image, Width_T, Height_T)</l>
+<c></c>
+<l>if (Width_T&gt;lenthT and Height_T&gt;lenthT)</l>
+<l>    if (Width_T&lt;2*lenthT or Height_T&lt;2*lenthT)</l>
+<l>        lenthT := min([Width_T, Height_T])/4</l>
+<l>    endif</l>
+<c></c>
+<c></c>
+<l>    gen_rectangle1 (ROI_0, lenthT, lenthT, Height_T-lenthT, Width_T-lenthT)</l>
+<c></c>
+<l>    reduce_domain (GrayImageT, ROI_0, ImageReducedT)</l>
+<l>    intensity (ROI_0, GrayImageT, MeanT, DeviationT)</l>
+<l>*     if (MeanT&gt;230)</l>
+<c></c>
+<c>    * *获取字体灰度值</c>
+<l>    threshold (ImageReducedT, RegionB, 0, MeanT)</l>
+<l>    reduce_domain (GrayImageT, RegionB, ImageReducedT)</l>
+<l>    intensity (RegionB, ImageReducedT, MeanB, DeviationB)</l>
+<c></c>
+<l>    threshold (ImageReducedT, RegionB1, 0, MeanB)</l>
+<l>    reduce_domain (GrayImageT, RegionB1, ImageReducedT1)</l>
+<l>    intensity (RegionB1, ImageReducedT1, MeanB2, DeviationB2)</l>
+<c></c>
+<l>    threshold (ImageReducedT, RegionB2, 0, MeanB2)</l>
+<l>    reduce_domain (GrayImageT, RegionB2, ImageReducedT12)</l>
+<l>    intensity (RegionB2, ImageReducedT12, MeanB3, DeviationB3)</l>
+<c></c>
+<c></c>
+<c>    * *获取背景灰度值</c>
+<l>    threshold (GrayImageT, RegionW, MeanT, 255)</l>
+<l>    reduce_domain (GrayImageT, RegionW, ImageReducedW)</l>
+<l>    intensity (RegionW, ImageReducedW, MeanW, DeviationW)</l>
+<c></c>
+<l>    threshold (GrayImageT, RegionW1, MeanW, 255)</l>
+<l>    reduce_domain (GrayImageT, RegionW1, ImageReducedW2)</l>
+<l>    intensity (RegionW1, ImageReducedW2, MeanW2, DeviationW2)</l>
+<c></c>
+<l>*     stop ()</l>
+<l>    if (MeanB3&gt;45 or MeanW2&lt;249)</l>
+<c></c>
+<l>*         chose := 1</l>
+<l>*         DeviationW2 := 15</l>
+<l>        if (chose=1)</l>
+<l>            min1 := MeanB2+DeviationB2</l>
+<l>            max1 := MeanW2+DeviationW2</l>
+<l>        elseif (chose=2)</l>
+<l>            min1 := MeanB2+DeviationB2</l>
+<l>            max1 := MeanW-2*DeviationW</l>
+<l>        elseif (chose=3)</l>
+<l>            min1 := MeanB2-DeviationB2</l>
+<l>            max1 := MeanW2+DeviationW2</l>
+<l>        elseif (chose=4)</l>
+<l>            min1 := MeanB2-DeviationB2</l>
+<l>            max1 := MeanW2-DeviationW2</l>
+<c></c>
+<l>        endif</l>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c>        * *获取背景灰度值</c>
+<l>*         threshold (GrayImageT, RegionW, 0, MeanT)</l>
+<l>*         opening_circle (RegionW, RegionOpening, 3.5)</l>
+<l>*         closing_circle (RegionOpening, RegionClosing, 3.5)</l>
+<l>*         difference (ROI_0, RegionClosing, RegionDifference1)</l>
+<l>*         reduce_domain (GrayImageT, RegionDifference1, ImageReducedW)</l>
+<l>*         intensity (RegionDifference1, ImageReducedW, MeanW, DeviationW)</l>
+<c></c>
+<l>*         threshold (GrayImageT, RegionW1, 0, MeanW)</l>
+<l>*         opening_circle (RegionW1, RegionOpening, 3.5)</l>
+<l>*         closing_circle (RegionOpening, RegionClosing, 3.5)</l>
+<l>*         difference (ROI_0, RegionClosing, RegionDifference1)</l>
+<l>*         reduce_domain (GrayImageT, RegionDifference1, ImageReducedW2)</l>
+<l>*         intensity (RegionDifference1, ImageReducedW2, MeanW2, DeviationW2)</l>
+<c></c>
+<c></c>
+<l>*         stop ()</l>
+<l>*         chose := 1</l>
+<l>*         DeviationW2 := 15</l>
+<l>*         if (chose=1)</l>
+<l>*             min1 := MeanB2+DeviationB2</l>
+<l>*             max1 := MeanW2+DeviationW2</l>
+<l>*         elseif (chose=2)</l>
+<l>*             min1 := MeanB3+DeviationB3</l>
+<l>*             max1 := MeanW2-DeviationW2</l>
+<l>*         elseif (chose=3)</l>
+<l>*             min1 := MeanB2-DeviationB2</l>
+<l>*             max1 := MeanW2+DeviationW2</l>
+<l>*         elseif (chose=4)</l>
+<l>*             min1 := MeanB2-DeviationB2</l>
+<l>*             max1 := MeanW2-DeviationW2</l>
+<c></c>
+<l>*         endif</l>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<l>        if (max1-min1&gt;10)</l>
+<c></c>
+<l>            mutil := 255/(max1-min1)</l>
+<l>            M1 := min1*mutil</l>
+<l>            M2 := max1*mutil</l>
+<l>            add := -M1</l>
+<l>        elseif (max1&lt;=min1)</l>
+<c></c>
+<l>            min1 := 5</l>
+<l>            max1 := 250</l>
+<l>            mutil := 255/(max1-min1)</l>
+<l>            M1 := min1*mutil</l>
+<l>            M2 := max1*mutil</l>
+<l>            add := -M1</l>
+<l>        else</l>
+<c></c>
+<l>            min1 := max1-10</l>
+<l>            max1 := max1</l>
+<l>            mutil := 255/(max1-min1)</l>
+<l>            M1 := min1*mutil</l>
+<l>            M2 := max1*mutil</l>
+<l>            add := -M1</l>
+<c></c>
+<l>        endif</l>
+<c></c>
+<c></c>
+<c></c>
+<c></c>
+<l>*         stop ()</l>
+<c></c>
+<l>        scale_image (Image, ImageScaled, mutil, add)</l>
+<c></c>
+<l>    else</l>
+<c></c>
+<l>*         stop ()</l>
+<c></c>
+<l>        ImageScaled := Image</l>
+<c></c>
+<c></c>
+<l>    endif</l>
+<c></c>
+<c></c>
+<l>*     stop ()</l>
+<c></c>
+<c></c>
+<c></c>
+<l>    count_channels (ImageScaled, Channels)</l>
+<c></c>
+<l>    if (Channels=3)</l>
+<l>        decompose3 (ImageScaled, Image1, Image2, Image3)</l>
+<l>        threshold (Image1, Region1, 0, 2)</l>
+<l>        overpaint_region (Image1, Region1, 3, 'fill')</l>
+<l>        threshold (Image1, Region1, 254, 255)</l>
+<l>        overpaint_region (Image1, Region1, 253, 'fill')</l>
+<c></c>
+<l>        threshold (Image2, Region2, 0, 2)</l>
+<l>        overpaint_region (Image2, Region2, 3, 'fill')</l>
+<l>        threshold (Image2, Region2, 254, 255)</l>
+<l>        overpaint_region (Image2, Region2, 253, 'fill')</l>
+<c></c>
+<l>        threshold (Image3, Region3, 0, 2)</l>
+<l>        overpaint_region (Image3, Region3, 3, 'fill')</l>
+<l>        threshold (Image3, Region3, 254, 255)</l>
+<l>        overpaint_region (Image3, Region3, 253, 'fill')</l>
+<c></c>
+<l>        compose3 (Image1, Image2, Image3, ImageScaled)</l>
+<c></c>
+<c></c>
+<l>    elseif (Channels=1)</l>
+<c></c>
+<l>        threshold (ImageScaled, Region1, 0, 2)</l>
+<l>        overpaint_region (ImageScaled, Region1, 3, 'fill')</l>
+<l>        threshold (ImageScaled, Region1, 254, 255)</l>
+<l>        overpaint_region (ImageScaled, Region1, 253, 'fill')</l>
+<c></c>
+<c></c>
+<l>    endif</l>
+<c></c>
+<l>*     stop ()</l>
+<l>endif</l>
+<l>return ()</l>
+</body>
+<docu id="Enhance_Image">
+<parameters>
+<parameter id="Image"/>
+<parameter id="ImageScaled"/>
+<parameter id="chose"/>
+</parameters>
+</docu>
+</procedure>
+<procedure name="judge_bai_ornot">
+<interface>
+<io>
+<par name="Image" base_type="iconic" dimension="0"/>
+</io>
+<oc>
+<par name="bai" base_type="ctrl" dimension="0"/>
+<par name="Mean2" base_type="ctrl" dimension="0"/>
+</oc>
+</interface>
+<body>
+<c></c>
+<c>* ***判断是白还是灰</c>
+<c></c>
+<l>lenthT := 100</l>
+<l>n := 3</l>
+<l>* stop ()</l>
+<l>get_image_size (Image, Width, Height)</l>
+<c></c>
+<l>if (Width&gt;2*lenthT and Height&gt;2*lenthT)</l>
+<l>    rgb1_to_gray (Image, GrayImageT)</l>
+<l>    get_image_size (Image, Width_T, Height_T)</l>
+<c></c>
+<l>    gen_rectangle1 (ROI_0, lenthT, lenthT, n*lenthT, n*lenthT)</l>
+<l>    gen_rectangle1 (TMP_Region, lenthT, Width_T-n*lenthT, n*lenthT, Width_T-lenthT)</l>
+<l>    union2 (ROI_0, TMP_Region, ROI_0)</l>
+<l>    gen_rectangle1 (TMP_Region, Height_T-n*lenthT, lenthT, Height_T-lenthT, n*lenthT)</l>
+<l>    union2 (ROI_0, TMP_Region, ROI_0)</l>
+<l>    gen_rectangle1 (TMP_Region, Height_T-n*lenthT, Width_T-n*lenthT, Height_T-lenthT, Width_T-lenthT)</l>
+<l>    union2 (ROI_0, TMP_Region, ROI_1)</l>
+<c></c>
+<c></c>
+<l>    reduce_domain (GrayImageT, ROI_1, ImageReducedT)</l>
+<l>    intensity (ROI_1, GrayImageT, MeanT, DeviationT)</l>
+<c></c>
+<c>    * *获取背景灰度值</c>
+<l>    threshold (ImageReducedT, Region, 0, MeanT)</l>
+<l>    opening_circle (Region, RegionOpening, 3.5)</l>
+<l>    closing_circle (RegionOpening, RegionClosing, 3.5)</l>
+<l>    difference (ROI_1, RegionClosing, RegionDifference1)</l>
+<l>    reduce_domain (ImageReducedT, RegionDifference1, ImageReduced1)</l>
+<l>    intensity (RegionDifference1, ImageReduced1, Mean2, Deviation2)</l>
+<c></c>
+<c></c>
+<l>    if (Mean2&lt;=243)</l>
+<l>        bai := 'No'</l>
+<l>    else</l>
+<l>        bai := 'Yes'</l>
+<l>    endif</l>
+<c></c>
+<l>else</l>
+<l>    bai := 'Yes'</l>
+<l>endif</l>
+<l>return ()</l>
+</body>
+<docu id="judge_bai_ornot">
+<parameters>
+<parameter id="Image"/>
+<parameter id="Mean2"/>
+<parameter id="bai"/>
+</parameters>
+</docu>
+</procedure>
+</hdevelop>
