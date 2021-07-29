@@ -39,7 +39,6 @@ namespace PreProcessTemplateTools
             this.radio_select = new System.Windows.Forms.RadioButton();
             this.radio_eraser = new System.Windows.Forms.RadioButton();
             this.radio_brush = new System.Windows.Forms.RadioButton();
-            this.button_Redo = new System.Windows.Forms.Button();
             this.button_Undo = new System.Windows.Forms.Button();
             this.groupBox_parameter = new System.Windows.Forms.GroupBox();
             this.button_SavePreview = new System.Windows.Forms.Button();
@@ -62,8 +61,8 @@ namespace PreProcessTemplateTools
             this.hWindowControl = new HalconDotNet.HWindowControl();
             this.label_modelNum = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.groupBox_toolBox.SuspendLayout();
             this.groupBox_parameter.SuspendLayout();
@@ -124,7 +123,6 @@ namespace PreProcessTemplateTools
             this.groupBox_toolBox.Controls.Add(this.radio_select);
             this.groupBox_toolBox.Controls.Add(this.radio_eraser);
             this.groupBox_toolBox.Controls.Add(this.radio_brush);
-            this.groupBox_toolBox.Controls.Add(this.button_Redo);
             this.groupBox_toolBox.Controls.Add(this.button_Undo);
             this.groupBox_toolBox.Location = new System.Drawing.Point(12, 29);
             this.groupBox_toolBox.Name = "groupBox_toolBox";
@@ -150,10 +148,10 @@ namespace PreProcessTemplateTools
             this.radio_eraser.AutoSize = true;
             this.radio_eraser.Location = new System.Drawing.Point(35, 69);
             this.radio_eraser.Name = "radio_eraser";
-            this.radio_eraser.Size = new System.Drawing.Size(47, 16);
+            this.radio_eraser.Size = new System.Drawing.Size(95, 16);
             this.radio_eraser.TabIndex = 5;
             this.radio_eraser.TabStop = true;
-            this.radio_eraser.Text = "橡皮";
+            this.radio_eraser.Text = "橡皮（涂白）";
             this.radio_eraser.UseVisualStyleBackColor = true;
             // 
             // radio_brush
@@ -161,20 +159,11 @@ namespace PreProcessTemplateTools
             this.radio_brush.AutoSize = true;
             this.radio_brush.Location = new System.Drawing.Point(35, 47);
             this.radio_brush.Name = "radio_brush";
-            this.radio_brush.Size = new System.Drawing.Size(47, 16);
+            this.radio_brush.Size = new System.Drawing.Size(95, 16);
             this.radio_brush.TabIndex = 4;
             this.radio_brush.TabStop = true;
-            this.radio_brush.Text = "画笔";
+            this.radio_brush.Text = "画笔（涂黑）";
             this.radio_brush.UseVisualStyleBackColor = true;
-            // 
-            // button_Redo
-            // 
-            this.button_Redo.Location = new System.Drawing.Point(116, 127);
-            this.button_Redo.Name = "button_Redo";
-            this.button_Redo.Size = new System.Drawing.Size(75, 23);
-            this.button_Redo.TabIndex = 3;
-            this.button_Redo.Text = "重做";
-            this.button_Redo.UseVisualStyleBackColor = true;
             // 
             // button_Undo
             // 
@@ -184,6 +173,7 @@ namespace PreProcessTemplateTools
             this.button_Undo.TabIndex = 1;
             this.button_Undo.Text = "撤销";
             this.button_Undo.UseVisualStyleBackColor = true;
+            this.button_Undo.Click += new System.EventHandler(this.button_Undo_Click);
             // 
             // groupBox_parameter
             // 
@@ -389,16 +379,6 @@ namespace PreProcessTemplateTools
             this.label3.TabIndex = 8;
             this.label3.Text = "提醒：编辑过程请及时保存";
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(173, 557);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -411,13 +391,23 @@ namespace PreProcessTemplateTools
             this.panel1.Size = new System.Drawing.Size(700, 700);
             this.panel1.TabIndex = 10;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label4.Location = new System.Drawing.Point(57, 545);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(138, 22);
+            this.label4.TabIndex = 11;
+            this.label4.Text = "绘制前先调整画面";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(958, 738);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label_modelNum);
             this.Controls.Add(this.button_PageDown);
@@ -451,7 +441,6 @@ namespace PreProcessTemplateTools
         private System.Windows.Forms.ToolStripMenuItem TSMI_Quit;
         private System.Windows.Forms.GroupBox groupBox_toolBox;
         private System.Windows.Forms.Button button_Undo;
-        private System.Windows.Forms.Button button_Redo;
         private System.Windows.Forms.GroupBox groupBox_parameter;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
@@ -475,9 +464,9 @@ namespace PreProcessTemplateTools
         private System.Windows.Forms.RadioButton radio_eraser;
         private System.Windows.Forms.RadioButton radio_brush;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton radio_select;
+        private System.Windows.Forms.Label label4;
     }
 }
 

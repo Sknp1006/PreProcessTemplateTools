@@ -8,19 +8,50 @@ using System.Windows.Forms;
 
 namespace PreProcessTemplateTools
 {
+
+    class Operator  // 操作表
+    {
+        public int Index = 0;
+
+        public Dictionary<HTuple[], string> UsedRegion = new Dictionary<HTuple[], string>();
+
+        public void AddOperation(HTuple[] pos, string color)
+        {
+            UsedRegion.Add(pos, color);
+            Index++;
+        }
+
+        public void SubOperation()
+        {
+            try
+            {
+                UsedRegion.Remove(UsedRegion.Last().Key);
+                Index--;
+            }
+            catch
+            {
+                Index = 0;
+            }
+        }
+    }
+
     // halcon处理模块
     class HProcessH
     {
-        public HObject Image = new HObject();  // 操作对象
-        HObject TempImage = new HObject();  // 临时操作对象
-        
+        public HObject Image = new HObject();  // 原始对象
+        public HObject TempImage;  // 临时操作对象
+        HObject ho_Rectangle;
+
+        public Operator opt = new Operator();
+
+        public List<HObject> OperationList = new List<HObject>();
+
+
         string OriginPath = "";
         public TikaModel tikaModel = new TikaModel();
         public HWindowControl HWindowControl_0 = null;
 
         string savePath = Application.StartupPath + "\\savePath\\";  // 保存路径
-
-        public Stack<HObject> ImageStack = new Stack<HObject>();  // 操作栈，栈中的数据会被外部修改
 
         public double zoomValue { get; set; }
 
@@ -37,7 +68,9 @@ namespace PreProcessTemplateTools
             HTuple hv_Width, hv_Height;
             HOperatorSet.ReadImage(out Image, OriginPath);
             HOperatorSet.GetImageSize(Image,out hv_Width,out hv_Height);
-            HOperatorSet.Rgb1ToGray(Image, out Image);
+            HOperatorSet.Rgb1ToGray(Image, out Image);  // 对象变了地址变了
+
+            TempImage = new HObject(Image);
 
             if (tikaModel.OriginPath == null)
             {
@@ -58,7 +91,7 @@ namespace PreProcessTemplateTools
         {
             HTuple hv_MeanB2, hv_MeanT, hv_MeanW, hv_res;
 
-            Enhance_Template_Image(Image,out Image, 2, a, b,out hv_MeanB2,out hv_MeanT,out hv_MeanW,out hv_res);
+            Enhance_Template_Image(Image, out TempImage, 2, a, b, out hv_MeanB2, out hv_MeanT, out hv_MeanW, out hv_res);
 
             if (tikaModel.MeanGrayValue == null)
             {
@@ -84,7 +117,7 @@ namespace PreProcessTemplateTools
         }
         
 
-        public void ShowImage()  // 自适应显示
+        public void ShowImage()  // 自适应显示/缩放
         {
             HTuple hv_Width = tikaModel.Width;
             HTuple hv_Height = tikaModel.Height;
@@ -96,7 +129,7 @@ namespace PreProcessTemplateTools
             HDevWindowStack.Push(HWindowControl_0.HalconWindow);
             HOperatorSet.SetColor(HDevWindowStack.GetActive(), "blue");
             HOperatorSet.SetPart(HDevWindowStack.GetActive(), row1, column1, row2, column2);
-            HOperatorSet.DispObj(Image, HDevWindowStack.GetActive());
+            HOperatorSet.DispObj(TempImage, HDevWindowStack.GetActive());
 
             hv_Width.Dispose();
             hv_Height.Dispose();
@@ -105,6 +138,7 @@ namespace PreProcessTemplateTools
             row2.Dispose();
             column2.Dispose();
         }
+
 
         public void ShowImage(HTuple rowMove, HTuple columnMove)  // 图像拖动
         {
@@ -116,7 +150,7 @@ namespace PreProcessTemplateTools
             HDevWindowStack.Push(HWindowControl_0.HalconWindow);
             HOperatorSet.SetColor(HDevWindowStack.GetActive(), "blue");
             HOperatorSet.SetPart(HDevWindowStack.GetActive(), row1 + rowMove, column1 + columnMove, row2 + rowMove, column2 + columnMove);  // 计算拖动距离调整HWindows控件显示图像的位置
-            HOperatorSet.DispObj(Image, HDevWindowStack.GetActive());
+            HOperatorSet.DispObj(TempImage, HDevWindowStack.GetActive());
 
             row1.Dispose();
             column1.Dispose();
@@ -134,7 +168,8 @@ namespace PreProcessTemplateTools
             HDevWindowStack.Push(HWindowControl_0.HalconWindow);
             HOperatorSet.SetColor(HDevWindowStack.GetActive(), "blue");
             HOperatorSet.SetPart(HDevWindowStack.GetActive(), row1, column1, row2, column2);
-            HOperatorSet.DispObj(Image, HDevWindowStack.GetActive());
+            HOperatorSet.DispObj(TempImage, HDevWindowStack.GetActive());
+
 
             row1.Dispose();
             column1.Dispose();
@@ -176,36 +211,92 @@ namespace PreProcessTemplateTools
 
         public void SaveImage()
         {
-            
-            if (System.IO.Directory.Exists(savePath) == false)
+            try
             {
-                System.IO.Directory.CreateDirectory(savePath);
+                if (System.IO.Directory.Exists(savePath) == false)
+                {
+                    System.IO.Directory.CreateDirectory(savePath);
+                }
+                this.tikaModel.SavePath = savePath + tikaModel.OriginPath.Split('\\').Last();
+                HOperatorSet.WriteImage(TempImage, "jpg", -1, this.tikaModel.SavePath);  // 保存的对象应该是栈顶元素
             }
-            this.tikaModel.SavePath = savePath + tikaModel.OriginPath.Split('\\').Last();
-            HOperatorSet.WriteImage(Image, "jpg", -1, this.tikaModel.SavePath);
+            catch
+            {
+                Console.WriteLine("保存失败");
+            }
+
         }
 
-        public void PaintImage()
+
+        public void DrawRectangle1(HTuple hv_Row1, HTuple hv_Column1, HTuple hv_Row2, HTuple hv_Column2)
         {
-            HObject tempImage = new HObject(Image);  // 绘制前现创建新对象
-            ImageStack.Push(tempImage);  // 入栈
-            TempImage.Dispose();
-            TempImage = tempImage;
+            HOperatorSet.GenEmptyObj(out ho_Rectangle);
+            ho_Rectangle.Dispose();
+            HOperatorSet.GenRectangle1(out ho_Rectangle, hv_Row1, hv_Column1, hv_Row2, hv_Column2);
+            HOperatorSet.OverpaintRegion(TempImage, ho_Rectangle, 5, "fill");
 
-             
+            HTuple[] pos = new HTuple[4];
+            pos[0] = hv_Row1;
+            pos[1] = hv_Column1;
+            pos[2] = hv_Row2;
+            pos[3] = hv_Column2;
+            opt.AddOperation(pos, "black");
+
+            HOperatorSet.DispObj(TempImage, HDevWindowStack.GetActive());
+
         }
 
+
+        public void DrawWhiteBlock(HTuple hv_Row1, HTuple hv_Column1, HTuple hv_Row2, HTuple hv_Column2)
+        {
+            HOperatorSet.GenEmptyObj(out ho_Rectangle);
+            ho_Rectangle.Dispose();
+            HOperatorSet.GenRectangle1(out ho_Rectangle, hv_Row1, hv_Column1, hv_Row2, hv_Column2);
+            HOperatorSet.OverpaintRegion(TempImage, ho_Rectangle, 251, "fill");
+
+            HTuple[] pos = new HTuple[4];
+            pos[0] = hv_Row1;
+            pos[1] = hv_Column1;
+            pos[2] = hv_Row2;
+            pos[3] = hv_Column2;
+            opt.AddOperation(pos, "white");
+
+            HOperatorSet.DispObj(TempImage, HDevWindowStack.GetActive());
+
+        }
+
+        public void ReDraw(Dictionary<HTuple[], string> pos)
+        {
+            TempImage.Dispose();
+            TempImage = new HObject(Image);
+            foreach (var item in pos)
+            {
+                if (item.Value == "white")
+                {
+                    ho_Rectangle.Dispose();
+                    HOperatorSet.GenRectangle1(out ho_Rectangle, item.Key[0], item.Key[1], item.Key[2], item.Key[3]);
+                    HOperatorSet.OverpaintRegion(TempImage, ho_Rectangle, 251, "fill");
+                }
+                else if (item.Value == "black")
+                {
+                    ho_Rectangle.Dispose();
+                    HOperatorSet.GenRectangle1(out ho_Rectangle, item.Key[0], item.Key[1], item.Key[2], item.Key[3]);
+                    HOperatorSet.OverpaintRegion(TempImage, ho_Rectangle, 5, "fill");
+                }
+            }
+            ShowImage('o');
+        }
 
         public void Dispose()
         {
             Image.Dispose();
 
             // 清空堆栈
-            foreach (HObject item in ImageStack)
-            {
-                item.Dispose();
-            }
-            ImageStack.Clear();
+            //foreach (HObject item in ImageStack)
+            //{
+            //    item.Dispose();
+            //}
+            //ImageStack.Clear();
         }
 
         public void Enhance_Template_Image(HObject ho_Image, out HObject ho_ImageScaled,

@@ -165,7 +165,6 @@ namespace PreProcessTemplateTools
             catch(System.Exception ex)
             {
                 throw ex;
-                return;
             }
             // 
             label_modelNum.Text = index.ToString() + string.Format("/{0}", TotalFiles);
@@ -209,19 +208,22 @@ namespace PreProcessTemplateTools
         #region 预览&保存
         private void button_Preview_Click(object sender, EventArgs e)
         {
-            HTuple row1, column1, row2, column2;
-            ModelObjectList[Index - 1].LoadModel();
-            ModelObjectList[Index - 1].ProcessTikaModel(trackBar_a.Value, trackBar_b.Value);
-            ModelObjectList[Index - 1].HWindowControl_0.HalconWindow.GetPart(out row1, out column1, out row2, out column2);
-            ModelObjectList[Index - 1].ShowImage('o');
+            try
+            {
+                ModelObjectList[Index - 1].ProcessTikaModel(trackBar_a.Value, trackBar_b.Value);
+                ModelObjectList[Index - 1].ShowImage('o');
+            }
+            catch
+            {
+                Console.WriteLine("预览失败");
+            }
+
         }
 
 
         private void button_SavePreview_Click(object sender, EventArgs e)
         {
-            // 保存图像
             ModelObjectList[Index - 1].SaveImage();
-            ModelObjectList[Index - 1].Dispose();
         }
         #endregion
 
@@ -287,7 +289,10 @@ namespace PreProcessTemplateTools
 
         private void hWindowControl_HMouseUp(object sender, HMouseEventArgs e)
         {
-            HTuple row, column, button;
+            HTuple row = new HTuple();
+            HTuple column = new HTuple();
+            HTuple button = new HTuple();
+
             endPoint = new Point((int)e.X, (int)e.Y);
             this.hWindowControl.Cursor = Cursors.Default;  // 指针（默认）
 
@@ -307,36 +312,91 @@ namespace PreProcessTemplateTools
                 //Console.WriteLine("没加载模板就触发了HMouseUp事件");
             }
 
-            // 松开鼠标开始绘制
+            // 鼠标拖动
             if (e.Button == MouseButtons.Left && radio_select.Checked == true)
             {
                 if (startPoint.X == 0 || startPoint.Y == 0)
+                {
                     return;
+                }
                 try
                 {
                     double dbRowMove, dbColMove;
-                    dbRowMove = startPoint.Y - endPoint.Y;//计算光标在X轴拖动的距离
-                    dbColMove = startPoint.X - endPoint.X;//计算光标在Y轴拖动的距离
-
+                    dbRowMove = startPoint.Y - endPoint.Y;  //计算光标在X轴拖动的距离
+                    dbColMove = startPoint.X - endPoint.X;  //计算光标在Y轴拖动的距离
                     ModelObjectList[Index - 1].ShowImage(dbRowMove, dbColMove);
                 }
                 catch (HalconException HDevExpDefaultException)
                 {
 
                 }
+                catch (System.ArgumentOutOfRangeException)
+                {
+
+                }
             }
+            // 画笔
+            else if (e.Button == MouseButtons.Left && radio_brush.Checked == true)
+            {
+                try
+                {
+                    HTuple row1 = new HTuple(startPoint.Y);
+                    HTuple column1 = new HTuple(startPoint.X);
+                    HTuple row2 = new HTuple(endPoint.Y);
+                    HTuple column2 = new HTuple(endPoint.X);
+                    // 左上到右下的绘制方式
+                    ModelObjectList[Index - 1].DrawRectangle1(row1, column1, row2, column2);
+
+                }
+                catch (HalconException HDevExpDefaultException)
+                {
+
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+
+                }
+
+        }
+            // 橡皮
+            else if (e.Button == MouseButtons.Left && radio_eraser.Checked == true)
+            {
+                try
+                {
+                    HTuple row1 = new HTuple(startPoint.Y);
+                    HTuple column1 = new HTuple(startPoint.X);
+                    HTuple row2 = new HTuple(endPoint.Y);
+                    HTuple column2 = new HTuple(endPoint.X);
+                    // 左上到右下的绘制方式
+                    ModelObjectList[Index - 1].DrawWhiteBlock(row1, column1, row2, column2);
+
+                }
+                catch (HalconException HDevExpDefaultException)
+                {
+
+                }
+                catch (System.ArgumentOutOfRangeException)
+                {
+
+                }
+            }
+
+            row.Dispose();
+            column.Dispose();
+            button.Dispose();
 
         }
 
 
         private void hWindowControl_HMouseDown(object sender, HMouseEventArgs e)
         {
-            Console.WriteLine("鼠标按下");
+            //Console.WriteLine("鼠标按下");
 
-            HTuple row, column, button;
+            HTuple row = new HTuple();
+            HTuple column = new HTuple();
+            HTuple button = new HTuple();
             startPoint = new Point((int)e.X, (int)e.Y);
             this.hWindowControl.Cursor = Cursors.Default;
-
 
             try
             {
@@ -354,12 +414,18 @@ namespace PreProcessTemplateTools
                 // 没加载模板就触发了HMouseDown事件
                 //Console.WriteLine("没加载模板就触发了HMouseDown事件");
             }
+
+            row.Dispose();
+            column.Dispose();
+            button.Dispose();
         }
 
         
         private void hWindowControl_HMouseMove(object sender, HMouseEventArgs e)
         {
-            HTuple row, column, button;
+            HTuple row = new HTuple();
+            HTuple column = new HTuple();
+            HTuple button = new HTuple();
 
             try
             {
@@ -376,21 +442,35 @@ namespace PreProcessTemplateTools
                 //Console.WriteLine("没加载模板就触发了HMouseMove事件");
             }
 
+            row.Dispose();
+            column.Dispose();
+            button.Dispose();
         }
 
 
         private void hWindowControl_MouseLeave(object sender, EventArgs e)
         {
-            //startPoint = Point.Empty;
-            //endPoint = Point.Empty;
+            startPoint = Point.Empty;
+            endPoint = Point.Empty;
             this.hWindowControl.Cursor = Cursors.Default;
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            ModelObjectList[Index - 1].PaintImage();
-        }
-
         #endregion
+
+
+        private void button_Undo_Click(object sender, EventArgs e)
+        {
+            //pop()
+            try
+            {
+                ModelObjectList[Index - 1].opt.SubOperation();  // 去掉最后一个
+                ModelObjectList[Index - 1].LoadModel();
+                ModelObjectList[Index - 1].ReDraw(ModelObjectList[Index - 1].opt.UsedRegion);
+            }
+            catch
+            {
+
+            }
+        }
     }
 }
