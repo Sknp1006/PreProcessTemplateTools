@@ -225,6 +225,7 @@ namespace PreProcessTemplateTools
             this.button_AutoProcess.TabIndex = 7;
             this.button_AutoProcess.Text = "自动";
             this.button_AutoProcess.UseVisualStyleBackColor = true;
+            this.button_AutoProcess.Visible = false;
             // 
             // textBox_FileName
             // 
