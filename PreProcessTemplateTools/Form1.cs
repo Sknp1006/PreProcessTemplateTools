@@ -159,7 +159,7 @@ namespace PreProcessTemplateTools
             {
                 ModelObjectList[index - 1].SetZoomValue(1);
                 ModelObjectList[index - 1].LoadModel();
-                ModelObjectList[index - 1].ProcessTikaModel(0, 0);
+                ModelObjectList[index - 1].ProcessTikaModel();
                 ModelObjectList[index - 1].ShowImage();
             }
             catch(System.Exception ex)
@@ -174,6 +174,9 @@ namespace PreProcessTemplateTools
             trackBar_a.Maximum = (int)ModelObjectList[index - 1].tikaModel.MaxGrayValue.D;
             trackBar_b.Minimum = (int)ModelObjectList[index - 1].tikaModel.MinGrayValue.D;
             trackBar_b.Maximum = (int)ModelObjectList[index - 1].tikaModel.MaxGrayValue.D;
+
+            ////trackBar_a.Value = trackBar_a.Minimum;
+            ////trackBar_b.Value = trackBar_a.Maximum;
 
             label_min_b.Text = ((int)ModelObjectList[index - 1].tikaModel.MinGrayValue.D).ToString();
             label_max_b.Text = ((int)ModelObjectList[index - 1].tikaModel.MaxGrayValue.D).ToString();
@@ -211,6 +214,7 @@ namespace PreProcessTemplateTools
             try
             {
                 ModelObjectList[Index - 1].ProcessTikaModel(trackBar_a.Value, trackBar_b.Value);
+                ModelObjectList[Index - 1].ReDraw(ModelObjectList[Index - 1].opt.UsedRegion);
                 ModelObjectList[Index - 1].ShowImage('o');
             }
             catch
@@ -313,7 +317,8 @@ namespace PreProcessTemplateTools
             }
 
             // 鼠标拖动
-            if (e.Button == MouseButtons.Left && radio_select.Checked == true)
+            if (e.Button == MouseButtons.Right)  // 右键滑动
+                //if (e.Button == MouseButtons.Left && radio_select.Checked == true)
             {
                 if (startPoint.X == 0 || startPoint.Y == 0)
                 {
@@ -463,14 +468,40 @@ namespace PreProcessTemplateTools
             //pop()
             try
             {
+                // 撤销新建了Image对象
                 ModelObjectList[Index - 1].opt.SubOperation();  // 去掉最后一个
-                ModelObjectList[Index - 1].LoadModel();
+                //ModelObjectList[Index - 1].LoadModel();
+                ModelObjectList[Index - 1].ProcessTikaModel(trackBar_a.Value, trackBar_b.Value);
                 ModelObjectList[Index - 1].ReDraw(ModelObjectList[Index - 1].opt.UsedRegion);
             }
             catch
             {
 
             }
+        }
+
+        private void TSMI_Quit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void button_OpenFodler_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog1.Description = "打开模板文件夹";
+            folderBrowserDialog1.ShowDialog();
+            if (folderBrowserDialog1.SelectedPath == "")
+            {
+                // 表示未选择文件夹
+                Console.WriteLine("文件夹路径为空");
+                return;
+            }
+            string ModelFolder = folderBrowserDialog1.SelectedPath;
+            textBox_Fodler.Text = ModelFolder;
+        }
+
+        private void button_Extract_Click(object sender, EventArgs e)
+        {
+            Extract extract = new Extract(textBox_Fodler.Text, (int)KHlength.Value);
         }
     }
 }

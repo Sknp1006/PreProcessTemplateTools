@@ -32,8 +32,6 @@ namespace PreProcessTemplateTools
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.TSMI_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_OpenFile = new System.Windows.Forms.ToolStripMenuItem();
-            this.TSMI_OpenFolder = new System.Windows.Forms.ToolStripMenuItem();
-            this.TSMI_SaveImage = new System.Windows.Forms.ToolStripMenuItem();
             this.TSMI_Quit = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox_toolBox = new System.Windows.Forms.GroupBox();
             this.radio_select = new System.Windows.Forms.RadioButton();
@@ -62,13 +60,20 @@ namespace PreProcessTemplateTools
             this.label_modelNum = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button_OpenFodler = new System.Windows.Forms.Button();
+            this.textBox_Fodler = new System.Windows.Forms.TextBox();
+            this.label_KHlength = new System.Windows.Forms.Label();
+            this.KHlength = new System.Windows.Forms.NumericUpDown();
+            this.button_Extract = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.groupBox_toolBox.SuspendLayout();
             this.groupBox_parameter.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_b)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_a)).BeginInit();
             this.panel1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.KHlength)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -77,7 +82,7 @@ namespace PreProcessTemplateTools
             this.TSMI_Open});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(958, 25);
+            this.menuStrip1.Size = new System.Drawing.Size(1122, 25);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -85,8 +90,6 @@ namespace PreProcessTemplateTools
             // 
             this.TSMI_Open.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.TSMI_OpenFile,
-            this.TSMI_OpenFolder,
-            this.TSMI_SaveImage,
             this.TSMI_Quit});
             this.TSMI_Open.Name = "TSMI_Open";
             this.TSMI_Open.Size = new System.Drawing.Size(44, 21);
@@ -95,28 +98,16 @@ namespace PreProcessTemplateTools
             // TSMI_OpenFile
             // 
             this.TSMI_OpenFile.Name = "TSMI_OpenFile";
-            this.TSMI_OpenFile.Size = new System.Drawing.Size(160, 22);
+            this.TSMI_OpenFile.Size = new System.Drawing.Size(180, 22);
             this.TSMI_OpenFile.Text = "打开模板";
             this.TSMI_OpenFile.Click += new System.EventHandler(this.TSMI_OpenFile_Click);
-            // 
-            // TSMI_OpenFolder
-            // 
-            this.TSMI_OpenFolder.Name = "TSMI_OpenFolder";
-            this.TSMI_OpenFolder.Size = new System.Drawing.Size(160, 22);
-            this.TSMI_OpenFolder.Text = "打开模板文件夹";
-            this.TSMI_OpenFolder.Click += new System.EventHandler(this.TSMI_OpenFolder_Click);
-            // 
-            // TSMI_SaveImage
-            // 
-            this.TSMI_SaveImage.Name = "TSMI_SaveImage";
-            this.TSMI_SaveImage.Size = new System.Drawing.Size(160, 22);
-            this.TSMI_SaveImage.Text = "保存";
             // 
             // TSMI_Quit
             // 
             this.TSMI_Quit.Name = "TSMI_Quit";
-            this.TSMI_Quit.Size = new System.Drawing.Size(160, 22);
+            this.TSMI_Quit.Size = new System.Drawing.Size(180, 22);
             this.TSMI_Quit.Text = "退出";
+            this.TSMI_Quit.Click += new System.EventHandler(this.TSMI_Quit_Click);
             // 
             // groupBox_toolBox
             // 
@@ -126,27 +117,29 @@ namespace PreProcessTemplateTools
             this.groupBox_toolBox.Controls.Add(this.button_Undo);
             this.groupBox_toolBox.Location = new System.Drawing.Point(12, 29);
             this.groupBox_toolBox.Name = "groupBox_toolBox";
-            this.groupBox_toolBox.Size = new System.Drawing.Size(230, 156);
+            this.groupBox_toolBox.Size = new System.Drawing.Size(230, 114);
             this.groupBox_toolBox.TabIndex = 2;
             this.groupBox_toolBox.TabStop = false;
-            this.groupBox_toolBox.Text = "工具箱";
+            this.groupBox_toolBox.Text = "涂改工具";
             // 
             // radio_select
             // 
             this.radio_select.AutoSize = true;
             this.radio_select.Checked = true;
-            this.radio_select.Location = new System.Drawing.Point(35, 25);
+            this.radio_select.Enabled = false;
+            this.radio_select.Location = new System.Drawing.Point(22, 23);
             this.radio_select.Name = "radio_select";
             this.radio_select.Size = new System.Drawing.Size(47, 16);
             this.radio_select.TabIndex = 6;
             this.radio_select.TabStop = true;
             this.radio_select.Text = "选择";
             this.radio_select.UseVisualStyleBackColor = true;
+            this.radio_select.Visible = false;
             // 
             // radio_eraser
             // 
             this.radio_eraser.AutoSize = true;
-            this.radio_eraser.Location = new System.Drawing.Point(35, 69);
+            this.radio_eraser.Location = new System.Drawing.Point(22, 67);
             this.radio_eraser.Name = "radio_eraser";
             this.radio_eraser.Size = new System.Drawing.Size(95, 16);
             this.radio_eraser.TabIndex = 5;
@@ -157,7 +150,7 @@ namespace PreProcessTemplateTools
             // radio_brush
             // 
             this.radio_brush.AutoSize = true;
-            this.radio_brush.Location = new System.Drawing.Point(35, 47);
+            this.radio_brush.Location = new System.Drawing.Point(22, 45);
             this.radio_brush.Name = "radio_brush";
             this.radio_brush.Size = new System.Drawing.Size(95, 16);
             this.radio_brush.TabIndex = 4;
@@ -167,9 +160,9 @@ namespace PreProcessTemplateTools
             // 
             // button_Undo
             // 
-            this.button_Undo.Location = new System.Drawing.Point(35, 127);
+            this.button_Undo.Location = new System.Drawing.Point(138, 45);
             this.button_Undo.Name = "button_Undo";
-            this.button_Undo.Size = new System.Drawing.Size(75, 23);
+            this.button_Undo.Size = new System.Drawing.Size(75, 60);
             this.button_Undo.TabIndex = 1;
             this.button_Undo.Text = "撤销";
             this.button_Undo.UseVisualStyleBackColor = true;
@@ -190,7 +183,7 @@ namespace PreProcessTemplateTools
             this.groupBox_parameter.Controls.Add(this.label1);
             this.groupBox_parameter.Controls.Add(this.trackBar_b);
             this.groupBox_parameter.Controls.Add(this.trackBar_a);
-            this.groupBox_parameter.Location = new System.Drawing.Point(12, 192);
+            this.groupBox_parameter.Location = new System.Drawing.Point(12, 149);
             this.groupBox_parameter.Name = "groupBox_parameter";
             this.groupBox_parameter.Size = new System.Drawing.Size(230, 287);
             this.groupBox_parameter.TabIndex = 3;
@@ -318,7 +311,7 @@ namespace PreProcessTemplateTools
             // 
             // button_PageUp
             // 
-            this.button_PageUp.Location = new System.Drawing.Point(12, 595);
+            this.button_PageUp.Location = new System.Drawing.Point(11, 494);
             this.button_PageUp.Name = "button_PageUp";
             this.button_PageUp.Size = new System.Drawing.Size(79, 44);
             this.button_PageUp.TabIndex = 5;
@@ -328,7 +321,7 @@ namespace PreProcessTemplateTools
             // 
             // button_PageDown
             // 
-            this.button_PageDown.Location = new System.Drawing.Point(97, 595);
+            this.button_PageDown.Location = new System.Drawing.Point(96, 494);
             this.button_PageDown.Name = "button_PageDown";
             this.button_PageDown.Size = new System.Drawing.Size(86, 44);
             this.button_PageDown.TabIndex = 6;
@@ -351,9 +344,9 @@ namespace PreProcessTemplateTools
             this.hWindowControl.ImagePart = new System.Drawing.Rectangle(0, 0, 640, 480);
             this.hWindowControl.Location = new System.Drawing.Point(0, 0);
             this.hWindowControl.Name = "hWindowControl";
-            this.hWindowControl.Size = new System.Drawing.Size(700, 700);
+            this.hWindowControl.Size = new System.Drawing.Size(864, 747);
             this.hWindowControl.TabIndex = 0;
-            this.hWindowControl.WindowSize = new System.Drawing.Size(700, 700);
+            this.hWindowControl.WindowSize = new System.Drawing.Size(864, 747);
             this.hWindowControl.HMouseMove += new HalconDotNet.HMouseEventHandler(this.hWindowControl_HMouseMove);
             this.hWindowControl.HMouseDown += new HalconDotNet.HMouseEventHandler(this.hWindowControl_HMouseDown);
             this.hWindowControl.HMouseUp += new HalconDotNet.HMouseEventHandler(this.hWindowControl_HMouseUp);
@@ -364,7 +357,7 @@ namespace PreProcessTemplateTools
             // 
             this.label_modelNum.AutoSize = true;
             this.label_modelNum.Font = new System.Drawing.Font("宋体", 15F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label_modelNum.Location = new System.Drawing.Point(189, 604);
+            this.label_modelNum.Location = new System.Drawing.Point(188, 503);
             this.label_modelNum.Name = "label_modelNum";
             this.label_modelNum.Size = new System.Drawing.Size(20, 20);
             this.label_modelNum.TabIndex = 7;
@@ -374,11 +367,11 @@ namespace PreProcessTemplateTools
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label3.Location = new System.Drawing.Point(8, 523);
+            this.label3.Location = new System.Drawing.Point(7, 456);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(202, 22);
+            this.label3.Size = new System.Drawing.Size(170, 22);
             this.label3.TabIndex = 8;
-            this.label3.Text = "提醒：编辑过程请及时保存";
+            this.label3.Text = "提醒：换页前注意保存";
             // 
             // panel1
             // 
@@ -389,25 +382,72 @@ namespace PreProcessTemplateTools
             this.panel1.Controls.Add(this.hWindowControl);
             this.panel1.Location = new System.Drawing.Point(248, 29);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(700, 700);
+            this.panel1.Size = new System.Drawing.Size(864, 747);
             this.panel1.TabIndex = 10;
             // 
-            // label4
+            // groupBox1
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label4.Location = new System.Drawing.Point(57, 545);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(138, 22);
-            this.label4.TabIndex = 11;
-            this.label4.Text = "绘制前先调整画面";
+            this.groupBox1.Controls.Add(this.button_Extract);
+            this.groupBox1.Controls.Add(this.KHlength);
+            this.groupBox1.Controls.Add(this.label_KHlength);
+            this.groupBox1.Controls.Add(this.textBox_Fodler);
+            this.groupBox1.Controls.Add(this.button_OpenFodler);
+            this.groupBox1.Location = new System.Drawing.Point(12, 592);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(230, 112);
+            this.groupBox1.TabIndex = 11;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "提取判错考生题号";
+            // 
+            // button_OpenFodler
+            // 
+            this.button_OpenFodler.Location = new System.Drawing.Point(8, 49);
+            this.button_OpenFodler.Name = "button_OpenFodler";
+            this.button_OpenFodler.Size = new System.Drawing.Size(77, 23);
+            this.button_OpenFodler.TabIndex = 0;
+            this.button_OpenFodler.Text = "打开文件夹";
+            this.button_OpenFodler.UseVisualStyleBackColor = true;
+            this.button_OpenFodler.Click += new System.EventHandler(this.button_OpenFodler_Click);
+            // 
+            // textBox_Fodler
+            // 
+            this.textBox_Fodler.Location = new System.Drawing.Point(9, 22);
+            this.textBox_Fodler.Name = "textBox_Fodler";
+            this.textBox_Fodler.Size = new System.Drawing.Size(213, 21);
+            this.textBox_Fodler.TabIndex = 10;
+            // 
+            // label_KHlength
+            // 
+            this.label_KHlength.AutoSize = true;
+            this.label_KHlength.Location = new System.Drawing.Point(8, 87);
+            this.label_KHlength.Name = "label_KHlength";
+            this.label_KHlength.Size = new System.Drawing.Size(77, 12);
+            this.label_KHlength.TabIndex = 12;
+            this.label_KHlength.Text = "考生号位数：";
+            // 
+            // KHlength
+            // 
+            this.KHlength.Location = new System.Drawing.Point(84, 85);
+            this.KHlength.Name = "KHlength";
+            this.KHlength.Size = new System.Drawing.Size(43, 21);
+            this.KHlength.TabIndex = 13;
+            // 
+            // button_Extract
+            // 
+            this.button_Extract.Location = new System.Drawing.Point(149, 56);
+            this.button_Extract.Name = "button_Extract";
+            this.button_Extract.Size = new System.Drawing.Size(75, 50);
+            this.button_Extract.TabIndex = 14;
+            this.button_Extract.Text = "提取";
+            this.button_Extract.UseVisualStyleBackColor = true;
+            this.button_Extract.Click += new System.EventHandler(this.button_Extract_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(958, 738);
-            this.Controls.Add(this.label4);
+            this.ClientSize = new System.Drawing.Size(1122, 785);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label_modelNum);
@@ -428,6 +468,9 @@ namespace PreProcessTemplateTools
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_b)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_a)).EndInit();
             this.panel1.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.KHlength)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -437,8 +480,6 @@ namespace PreProcessTemplateTools
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem TSMI_Open;
         private System.Windows.Forms.ToolStripMenuItem TSMI_OpenFile;
-        private System.Windows.Forms.ToolStripMenuItem TSMI_OpenFolder;
-        private System.Windows.Forms.ToolStripMenuItem TSMI_SaveImage;
         private System.Windows.Forms.ToolStripMenuItem TSMI_Quit;
         private System.Windows.Forms.GroupBox groupBox_toolBox;
         private System.Windows.Forms.Button button_Undo;
@@ -467,7 +508,12 @@ namespace PreProcessTemplateTools
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.RadioButton radio_select;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button button_Extract;
+        private System.Windows.Forms.NumericUpDown KHlength;
+        private System.Windows.Forms.Label label_KHlength;
+        private System.Windows.Forms.TextBox textBox_Fodler;
+        private System.Windows.Forms.Button button_OpenFodler;
     }
 }
 
