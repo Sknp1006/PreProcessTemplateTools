@@ -211,6 +211,15 @@ namespace PreProcessTemplateTools
         // 计算缩放比
         public void CalScaleValue(HTuple Width, HTuple Height, HWindowControl hv_WindowControl, out HTuple row1, out HTuple column1, out HTuple row2, out HTuple column2)
         {
+            if (hv_WindowControl.Width == 0 || hv_WindowControl.Height == 0)
+            {
+                row1 = 1;
+                column1 = 1;
+                row2 = 1;
+                column2 = 1;
+                return;
+            }
+
             HTuple ScaleWidth = Width / (hv_WindowControl.Width * zoomValue);
             HTuple ScaleHeight = Height / (hv_WindowControl.Height * zoomValue);
 

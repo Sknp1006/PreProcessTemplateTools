@@ -61,11 +61,11 @@ namespace PreProcessTemplateTools
             this.label3 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button_OpenFodler = new System.Windows.Forms.Button();
-            this.textBox_Fodler = new System.Windows.Forms.TextBox();
-            this.label_KHlength = new System.Windows.Forms.Label();
-            this.KHlength = new System.Windows.Forms.NumericUpDown();
             this.button_Extract = new System.Windows.Forms.Button();
+            this.KHlength = new System.Windows.Forms.NumericUpDown();
+            this.label_KHlength = new System.Windows.Forms.Label();
+            this.textBox_Fodler = new System.Windows.Forms.TextBox();
+            this.button_OpenFodler = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.groupBox_toolBox.SuspendLayout();
             this.groupBox_parameter.SuspendLayout();
@@ -98,14 +98,14 @@ namespace PreProcessTemplateTools
             // TSMI_OpenFile
             // 
             this.TSMI_OpenFile.Name = "TSMI_OpenFile";
-            this.TSMI_OpenFile.Size = new System.Drawing.Size(180, 22);
+            this.TSMI_OpenFile.Size = new System.Drawing.Size(124, 22);
             this.TSMI_OpenFile.Text = "打开模板";
             this.TSMI_OpenFile.Click += new System.EventHandler(this.TSMI_OpenFile_Click);
             // 
             // TSMI_Quit
             // 
             this.TSMI_Quit.Name = "TSMI_Quit";
-            this.TSMI_Quit.Size = new System.Drawing.Size(180, 22);
+            this.TSMI_Quit.Size = new System.Drawing.Size(124, 22);
             this.TSMI_Quit.Text = "退出";
             this.TSMI_Quit.Click += new System.EventHandler(this.TSMI_Quit_Click);
             // 
@@ -351,6 +351,7 @@ namespace PreProcessTemplateTools
             this.hWindowControl.HMouseDown += new HalconDotNet.HMouseEventHandler(this.hWindowControl_HMouseDown);
             this.hWindowControl.HMouseUp += new HalconDotNet.HMouseEventHandler(this.hWindowControl_HMouseUp);
             this.hWindowControl.HMouseWheel += new HalconDotNet.HMouseEventHandler(this.hWindowControl_HMouseWheel);
+            this.hWindowControl.SizeChanged += new System.EventHandler(this.hWindowControl_SizeChanged);
             this.hWindowControl.MouseLeave += new System.EventHandler(this.hWindowControl_MouseLeave);
             // 
             // label_modelNum
@@ -399,22 +400,22 @@ namespace PreProcessTemplateTools
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "提取判错考生题号";
             // 
-            // button_OpenFodler
+            // button_Extract
             // 
-            this.button_OpenFodler.Location = new System.Drawing.Point(8, 49);
-            this.button_OpenFodler.Name = "button_OpenFodler";
-            this.button_OpenFodler.Size = new System.Drawing.Size(77, 23);
-            this.button_OpenFodler.TabIndex = 0;
-            this.button_OpenFodler.Text = "打开文件夹";
-            this.button_OpenFodler.UseVisualStyleBackColor = true;
-            this.button_OpenFodler.Click += new System.EventHandler(this.button_OpenFodler_Click);
+            this.button_Extract.Location = new System.Drawing.Point(149, 56);
+            this.button_Extract.Name = "button_Extract";
+            this.button_Extract.Size = new System.Drawing.Size(75, 50);
+            this.button_Extract.TabIndex = 14;
+            this.button_Extract.Text = "提取";
+            this.button_Extract.UseVisualStyleBackColor = true;
+            this.button_Extract.Click += new System.EventHandler(this.button_Extract_Click);
             // 
-            // textBox_Fodler
+            // KHlength
             // 
-            this.textBox_Fodler.Location = new System.Drawing.Point(9, 22);
-            this.textBox_Fodler.Name = "textBox_Fodler";
-            this.textBox_Fodler.Size = new System.Drawing.Size(213, 21);
-            this.textBox_Fodler.TabIndex = 10;
+            this.KHlength.Location = new System.Drawing.Point(84, 85);
+            this.KHlength.Name = "KHlength";
+            this.KHlength.Size = new System.Drawing.Size(43, 21);
+            this.KHlength.TabIndex = 13;
             // 
             // label_KHlength
             // 
@@ -425,22 +426,22 @@ namespace PreProcessTemplateTools
             this.label_KHlength.TabIndex = 12;
             this.label_KHlength.Text = "考生号位数：";
             // 
-            // KHlength
+            // textBox_Fodler
             // 
-            this.KHlength.Location = new System.Drawing.Point(84, 85);
-            this.KHlength.Name = "KHlength";
-            this.KHlength.Size = new System.Drawing.Size(43, 21);
-            this.KHlength.TabIndex = 13;
+            this.textBox_Fodler.Location = new System.Drawing.Point(9, 22);
+            this.textBox_Fodler.Name = "textBox_Fodler";
+            this.textBox_Fodler.Size = new System.Drawing.Size(213, 21);
+            this.textBox_Fodler.TabIndex = 10;
             // 
-            // button_Extract
+            // button_OpenFodler
             // 
-            this.button_Extract.Location = new System.Drawing.Point(149, 56);
-            this.button_Extract.Name = "button_Extract";
-            this.button_Extract.Size = new System.Drawing.Size(75, 50);
-            this.button_Extract.TabIndex = 14;
-            this.button_Extract.Text = "提取";
-            this.button_Extract.UseVisualStyleBackColor = true;
-            this.button_Extract.Click += new System.EventHandler(this.button_Extract_Click);
+            this.button_OpenFodler.Location = new System.Drawing.Point(8, 49);
+            this.button_OpenFodler.Name = "button_OpenFodler";
+            this.button_OpenFodler.Size = new System.Drawing.Size(77, 23);
+            this.button_OpenFodler.TabIndex = 0;
+            this.button_OpenFodler.Text = "打开文件夹";
+            this.button_OpenFodler.UseVisualStyleBackColor = true;
+            this.button_OpenFodler.Click += new System.EventHandler(this.button_OpenFodler_Click);
             // 
             // Form1
             // 
