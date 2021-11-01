@@ -211,6 +211,11 @@ namespace PreProcessTemplateTools
         #region 预览&保存
         private void button_Preview_Click(object sender, EventArgs e)
         {
+            if (trackBar_a.Value == trackBar_b.Value)
+            {
+                MessageBox.Show("目前 a 值 等于 b 值，请确保b 值大于a 值。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
             try
             {
                 ModelObjectList[Index - 1].ProcessTikaModel(trackBar_a.Value, trackBar_b.Value);
@@ -502,6 +507,11 @@ namespace PreProcessTemplateTools
         private void button_Extract_Click(object sender, EventArgs e)
         {
             Extract extract = new Extract(textBox_Fodler.Text, (int)KHlength.Value);
+        }
+
+        private void hWindowControl_SizeChanged(object sender, EventArgs e)
+        {
+            ModelObjectList[Index - 1].ShowImage();
         }
     }
 }
